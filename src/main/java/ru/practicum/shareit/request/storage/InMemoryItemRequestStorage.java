@@ -23,6 +23,7 @@ public class InMemoryItemRequestStorage implements ItemRequestStorage {
 
         return itemRequest;
     }
+
     private long getNextId() {
         return ++counter;
     }
