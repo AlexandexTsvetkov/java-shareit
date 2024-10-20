@@ -5,9 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.exception.InternalServerException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.NewItemRequest;
 import ru.practicum.shareit.item.dto.UpdateItemRequest;
@@ -22,33 +20,23 @@ import java.util.Collection;
 public class ItemController {
 
     @Autowired
-    ItemService itemService;
+    private final ItemService itemService;
 
     @GetMapping
-    public Collection<ItemDto> findAll(@RequestHeader HttpHeaders headers) {
+    public Collection<ItemDto> findAll(@RequestHeader("X-Sharer-User-Id") long userId) {
 
         log.info("пришел Get запрос /users");
-        String textUserId = headers.getFirst("X-Sharer-User-Id");
-
-        if (textUserId == null) {
-            throw (new InternalServerException("Не передано значение заголовка X-Sharer-User-Id"));
-        }
-        Collection<ItemDto> items = itemService.findAll(Long.parseLong(textUserId));
+        Collection<ItemDto> items = itemService.findAll(userId);
         log.info("Отправлен ответ Get /users с телом: {}", items);
         return items;
     }
 
     @PostMapping
-    public ItemDto create(@Valid @RequestBody NewItemRequest newItemRequest, @RequestHeader HttpHeaders headers) {
+    public ItemDto create(@Valid @RequestBody NewItemRequest newItemRequest, @RequestHeader("X-Sharer-User-Id") long userId) {
 
         log.info("пришел Post запрос /items с телом: {}", newItemRequest);
 
-        String textUserId = headers.getFirst("x-sharer-user-id");
-
-        if (textUserId == null) {
-            throw (new InternalServerException("Не передано значение заголовка X-Sharer-User-Id"));
-        }
-        ItemDto newItem = itemService.create(newItemRequest, Long.parseLong(textUserId));
+        ItemDto newItem = itemService.create(newItemRequest, userId);
         log.info("Отправлен ответ Post /items с телом: {}", newItem);
         return newItem;
     }
@@ -63,16 +51,10 @@ public class ItemController {
     }
 
     @PatchMapping("/{itemId}")
-    public ItemDto update(@Valid @RequestBody UpdateItemRequest updateItemRequest, @PathVariable long itemId, @RequestHeader HttpHeaders headers) {
+    public ItemDto update(@Valid @RequestBody UpdateItemRequest updateItemRequest, @PathVariable long itemId, @RequestHeader("X-Sharer-User-Id") long userId) {
 
         log.info("пришел PUT запрос /users с телом: {}", updateItemRequest);
-
-        String textUserId = headers.getFirst("X-Sharer-User-Id");
-
-        if (textUserId == null) {
-            throw (new InternalServerException("Не передано значение заголовка X-Sharer-User-Id"));
-        }
-        ItemDto item = itemService.update(updateItemRequest, Long.parseLong(textUserId), itemId);
+        ItemDto item = itemService.update(updateItemRequest, userId, itemId);
         log.info("Отправлен ответ PUT /users с телом: {}", item);
         return item;
     }

@@ -1,5 +1,7 @@
 package ru.practicum.shareit.request.service;
 
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.request.mapper.ItemRequestMapper;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
@@ -12,10 +14,12 @@ import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+@Service
+@AllArgsConstructor
 public class ItemRequestService {
 
-    UserStorage userStorage;
-    ItemRequestStorage itemRequestStorage;
+    private final UserStorage userStorage;
+    private final ItemRequestStorage itemRequestStorage;
 
     public ItemRequestDto create(ItemRequestDto itemRequestDto, long userId) {
 

@@ -19,7 +19,7 @@ import java.util.Collection;
 public class UserController {
 
     @Autowired
-    UserService userService;
+    private final UserService userService;
 
     @GetMapping
     public Collection<UserDto> findAll() {
