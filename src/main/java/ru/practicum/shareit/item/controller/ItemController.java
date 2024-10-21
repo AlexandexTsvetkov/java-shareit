@@ -25,9 +25,9 @@ public class ItemController {
     @GetMapping
     public Collection<ItemDto> findAll(@RequestHeader("X-Sharer-User-Id") long userId) {
 
-        log.info("пришел Get запрос /users");
+        log.info("пришел Get запрос /items");
         Collection<ItemDto> items = itemService.findAll(userId);
-        log.info("Отправлен ответ Get /users с телом: {}", items);
+        log.info("Отправлен ответ Get /items с телом: {}", items);
         return items;
     }
 
@@ -44,23 +44,26 @@ public class ItemController {
     @GetMapping("/{id}")
     public ItemDto findItem(@PathVariable long id) {
 
-        log.info("пришел Get запрос /{}", id);
+        log.info("пришел Get запрос items/{}", id);
         ItemDto item = itemService.findById(id);
-        log.info("Отправлен ответ Get /films с телом: {}", item);
+        log.info("Отправлен ответ Get с телом: {}", item);
         return item;
     }
 
     @PatchMapping("/{itemId}")
     public ItemDto update(@Valid @RequestBody UpdateItemRequest updateItemRequest, @PathVariable long itemId, @RequestHeader("X-Sharer-User-Id") long userId) {
 
-        log.info("пришел PUT запрос /users с телом: {}", updateItemRequest);
+        log.info("пришел PATCH запрос /items/{} с телом: {}", itemId, updateItemRequest);
         ItemDto item = itemService.update(updateItemRequest, userId, itemId);
-        log.info("Отправлен ответ PUT /users с телом: {}", item);
+        log.info("Отправлен ответ PATCH /items с телом: {}", item);
         return item;
     }
 
     @GetMapping("/search")
     public Collection<ItemDto> findByText(@RequestParam(name = "text") @NotNull String text) {
-        return itemService.findByText(text);
+        log.info("пришел GET запрос /items/search параметром {}", text);
+        Collection<ItemDto> items =  itemService.findByText(text);
+        log.info("Отправлен ответ PATCH /items с телом: {}", items);
+        return items;
     }
 }

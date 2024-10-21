@@ -59,9 +59,7 @@ public class ItemService {
             throw new NotFoundException(MessageFormat.format("Пользователь с id {0, number} не найден", userId));
         }
 
-
-        newItemRequest.setOwner(user.get());
-        Item newItem = ItemMapper.mapToItem(newItemRequest);
+        Item newItem = ItemMapper.mapToItem(newItemRequest, user.get());
 
         return ItemMapper.mapItemDto(itemStorage.create(newItem));
     }
