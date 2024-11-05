@@ -24,7 +24,6 @@ public class NewBookingRequest {
     @Future(message = "Дата окончания должна быть в будущем")
     private LocalDateTime end;
 
-    @NotNull
     private BookingStatus status;
 
     @NotNull

@@ -1,5 +1,4 @@
-package ru.practicum.shareit.request.model;
-
+package ru.practicum.shareit.item.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -10,22 +9,27 @@ import ru.practicum.shareit.user.model.User;
 import java.time.Instant;
 
 @Entity
-@Table(name = "item_request", schema = "public")
+@Table(name = "comment", schema = "public")
 @Getter
 @Setter
 @ToString
-public class ItemRequest {
+public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    private String description;
+    private String text;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @ToString.Exclude
-    @JoinColumn(name = "requester_id")
-    private User requester;
+    @JoinColumn(name = "item_id")
+    private Item item;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
+    @JoinColumn(name = "author_id")
+    private User author;
 
     private Instant created;
 }

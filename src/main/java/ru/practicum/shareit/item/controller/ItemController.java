@@ -6,9 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.NewItemRequest;
-import ru.practicum.shareit.item.dto.UpdateItemRequest;
+import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.service.ItemService;
 
 import java.util.Collection;
@@ -57,6 +55,15 @@ public class ItemController {
         ItemDto item = itemService.update(updateItemRequest, userId, itemId);
         log.info("Отправлен ответ PATCH /items с телом: {}", item);
         return item;
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public CommentDto addComment(@Valid @RequestBody NewCommentRequest newCommentRequest, @PathVariable long itemId, @RequestHeader("X-Sharer-User-Id") long userId) {
+
+        log.info("пришел POST запрос /items/{}/comment с телом: {}", itemId, newCommentRequest);
+        CommentDto comment = itemService.addComment(newCommentRequest, userId, itemId);
+        log.info("Отправлен ответ POST /items с телом: {}", comment);
+        return comment;
     }
 
     @GetMapping("/search")
