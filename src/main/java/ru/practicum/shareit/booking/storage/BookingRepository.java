@@ -14,7 +14,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findBookingsByBookerIdOrderByStart(long bookerId);
 
     @Query("select book " +
-            "from Booking as book "+
+            "from Booking as book " +
             "join book.booker as b " +
             "where b.id = ?1 " +
             "and ?2 between book.start and book.end " +
@@ -22,7 +22,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findCurrentBookingsByBookerIdOrderByStart(long bookerId, Instant currentDate);
 
     @Query("select book " +
-            "from Booking as book "+
+            "from Booking as book " +
             "join book.booker as b " +
             "where b.id = ?1 " +
             "and ?2 > book.end " +
@@ -30,14 +30,14 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findPastBookingsByBookerIdOrderByStart(long bookerId, Instant currentDate);
 
     @Query("select book " +
-            "from Booking as book "+
+            "from Booking as book " +
             "join book.booker as b " +
             "where b.id = ?1 " +
             "and book.status = ?2 ")
     List<Booking> findBookingsByBookerIdAndByStatusOrderByStart(long bookerId, String status);
 
     @Query("select book " +
-            "from Booking as book "+
+            "from Booking as book " +
             "join book.booker as b " +
             "where b.id = ?1 " +
             "and ?2 < book.start " +
@@ -45,7 +45,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findFutureBookingsByBookerIdOrderByStart(long bookerId, Instant currentDate);
 
     @Query("select book " +
-            "from Booking as book "+
+            "from Booking as book " +
             "join book.booker as b " +
             "join book.item as i " +
             "join i.owner as o " +
@@ -55,7 +55,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     Optional<Booking> findBookingByIdAndOwnerOrBookerId(long bookerId, long userId);
 
     @Query("select book " +
-            "from Booking as book "+
+            "from Booking as book " +
             "join book.item as i " +
             "join i.owner as o " +
             "where o.id = ?1 " +
@@ -66,7 +66,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<ItemLastAndNextBooking> findLastAndNextBookings(long ownerId, Instant currentDate);
 
     @Query("select book " +
-            "from Booking as book "+
+            "from Booking as book " +
             "join book.item as i " +
             "join i.owner as o " +
             "where o.id = ?1 " +
@@ -75,7 +75,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findCurrentBookingsByOwner(long ownerId, Instant currentDate);
 
     @Query("select book " +
-            "from Booking as book "+
+            "from Booking as book " +
             "join book.item as i " +
             "join i.owner as o " +
             "where o.id = ?1 " +
@@ -84,7 +84,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findPastBookingsByOwner(long ownerId, Instant currentDate);
 
     @Query("select book " +
-            "from Booking as book "+
+            "from Booking as book " +
             "join book.item as i " +
             "join i.owner as o " +
             "where o.id = ?1 " +
@@ -93,7 +93,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findFutureBookingsByOwner(long ownerId, Instant currentDate);
 
     @Query("select book " +
-            "from Booking as book "+
+            "from Booking as book " +
             "join book.item as i " +
             "join i.owner as o " +
             "where o.id = ?1 " +
@@ -102,7 +102,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findBookingsByOwnerAndStatus(long ownerId, String status);
 
     @Query("select book " +
-            "from Booking as book "+
+            "from Booking as book " +
             "join book.item as i " +
             "join book.booker as b " +
             "where b.id = ?1 " +

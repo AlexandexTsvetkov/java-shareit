@@ -67,9 +67,9 @@ public class ItemService {
             final Map<Long, ItemLastAndNextBooking> itemLastAndNextBookingMap = itemLastAndNextBookings
                     .stream().collect(Collectors.toMap(ItemLastAndNextBooking::getItemId, itemLastAndNextBooking -> itemLastAndNextBooking));
 
-            return items.stream().map(item -> ItemMapper.mapItemDto(item, commentsByItems.get(item)
-                    , itemLastAndNextBookingMap.get(item.getId()).getLastBooking()
-                    , itemLastAndNextBookingMap.get(item.getId()).getNextBooking())).toList();
+            return items.stream().map(item -> ItemMapper.mapItemDto(item, commentsByItems.get(item),
+                    itemLastAndNextBookingMap.get(item.getId()).getLastBooking(),
+                    itemLastAndNextBookingMap.get(item.getId()).getNextBooking())).toList();
 
         } else {
 

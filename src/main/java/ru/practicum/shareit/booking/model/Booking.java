@@ -44,7 +44,7 @@ import java.time.Instant;
         "join item as i on b.item_id = i.id " +
         "where i.owner_id = ?1 " +
         "and b.start_date > ?2 " +
-        "group by b.item_id) as bookingsWithDates on allitems.id = bookingsWithDates.item_id "+
+        "group by b.item_id) as bookingsWithDates on allitems.id = bookingsWithDates.item_id " +
         "where allitems.owner_id = ?1 " +
         "group by allitems.id ",
         resultSetMapping = "itemLastAndNextBookingMapping"

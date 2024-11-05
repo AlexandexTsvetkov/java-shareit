@@ -23,8 +23,8 @@ public class BookingController {
     private final BookingService bookingService;
 
     @GetMapping
-    public Collection<BookingDto> findAll(@RequestHeader("X-Sharer-User-Id") long userId
-            ,@RequestParam(defaultValue = "ALL") State state) {
+    public Collection<BookingDto> findAll(@RequestHeader("X-Sharer-User-Id") long userId,
+                                          @RequestParam(defaultValue = "ALL") State state) {
 
         log.info("пришел Get запрос /bookings");
         Collection<BookingDto> bookings = bookingService.findAllByUser(userId, state);
@@ -33,8 +33,8 @@ public class BookingController {
     }
 
     @GetMapping("/owner")
-    public Collection<BookingDto> findAllByOwner(@RequestHeader("X-Sharer-User-Id") long userId
-            ,@RequestParam(defaultValue = "ALL") State state) {
+    public Collection<BookingDto> findAllByOwner(@RequestHeader("X-Sharer-User-Id") long userId,
+                                                 @RequestParam(defaultValue = "ALL") State state) {
 
         log.info("пришел Get запрос /bookings/owner");
         Collection<BookingDto> bookings = bookingService.findAllByOwner(userId, state);
@@ -43,8 +43,8 @@ public class BookingController {
     }
 
     @PostMapping
-    public BookingDto create(@Valid @RequestBody NewBookingRequest newBookingRequest
-            , @RequestHeader("X-Sharer-User-Id") long userId) {
+    public BookingDto create(@Valid @RequestBody NewBookingRequest newBookingRequest,
+                             @RequestHeader("X-Sharer-User-Id") long userId) {
 
         log.info("пришел Post запрос /bookings с телом: {}", newBookingRequest);
 
@@ -63,8 +63,8 @@ public class BookingController {
     }
 
     @PatchMapping("/{bookingId}")
-    public BookingDto approve(@PathVariable long bookingId, @RequestHeader("X-Sharer-User-Id") long userId
-                                ,@RequestParam(name = "approved") @NotNull Boolean approved) {
+    public BookingDto approve(@PathVariable long bookingId, @RequestHeader("X-Sharer-User-Id") long userId,
+                              @RequestParam(name = "approved") @NotNull Boolean approved) {
 
         log.info("пришел PATCH запрос /bookings/{}?approved={}", bookingId, approved);
         BookingDto booking = bookingService.approve(bookingId, userId, approved);
