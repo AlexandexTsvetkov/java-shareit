@@ -4,6 +4,9 @@ import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+
 public class ItemRequestMapper {
 
     public static ItemRequest mapToItemRequest(ItemRequestDto request, User requester) {
@@ -12,7 +15,7 @@ public class ItemRequestMapper {
         itemRequest.setDescription(request.getDescription());
         itemRequest.setRequester(requester);
         itemRequest.setId(request.getId());
-        itemRequest.setDate(request.getDate());
+        itemRequest.setCreated(request.getDate().toInstant(ZoneOffset.MAX));
 
         return itemRequest;
     }
@@ -22,7 +25,7 @@ public class ItemRequestMapper {
         ItemRequestDto dto = new ItemRequestDto();
         dto.setId(itemRequest.getId());
         dto.setDescription(itemRequest.getDescription());
-        dto.setDate(itemRequest.getDate());
+        dto.setDate(LocalDateTime.ofInstant(itemRequest.getCreated(), ZoneOffset.UTC));
         return dto;
     }
 }
