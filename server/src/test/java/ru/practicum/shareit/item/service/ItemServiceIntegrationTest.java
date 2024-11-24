@@ -98,7 +98,10 @@ class ItemServiceIntegrationTest {
 
         ItemDto itemDto = itemService.create(newItemRequest, newUser.getId());
 
-        assertEquals(itemService.findById(itemDto.getId()).getId(), itemDto.getId());
+        Item item = itemStorage.findById(itemDto.getId()).get();
+
+        assertEquals(item.getId(), itemDto.getId());
+
     }
 
     @Test
@@ -185,5 +188,6 @@ class ItemServiceIntegrationTest {
 
         assertEquals(itemService.findByText(newItem.getDescription()).size(), 1);
     }
+
 }
 

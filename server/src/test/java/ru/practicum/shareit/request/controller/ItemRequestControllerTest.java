@@ -91,7 +91,7 @@ class ItemRequestControllerTest {
                     return List.of(itemRequestDto);
                 });
 
-        mvc.perform(get("/requests")
+        mvc.perform(get("/requests/all")
                         .content(objectMapper.writeValueAsString(itemRequest))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -113,7 +113,7 @@ class ItemRequestControllerTest {
                     return itemRequestDto;
                 });
 
-        mvc.perform(get("/requests")
+        mvc.perform(get("/requests/1")
                         .content(objectMapper.writeValueAsString(itemRequest))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.NewBookingRequest;
+import ru.practicum.shareit.booking.dto.UpdateBookingRequest;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
@@ -88,6 +89,35 @@ public class BookingService {
             } else {
                 booking.setStatus(BookingStatus.REJECTED);
             }
+
+            booking = bookingStorage.save(booking);
+
+            return BookingMapper.mapBookingDto(booking, UserMapper.mapToUserDto(booking.getBooker()), ItemMapper.mapItemDto(booking.getItem()));
+        } else {
+            throw new NotFoundException(MessageFormat.format("Бронирование с id {0, number} не найден", bookingId));
+        }
+    }
+
+    @Transactional
+    public BookingDto update(long bookingId, long userId, UpdateBookingRequest updateBookingRequest) {
+
+        Optional<User> user = userRepository.findById(userId);
+
+        if (user.isEmpty()) {
+            throw new InternalServerException(MessageFormat.format("Пользователь с id {0, number} не найден", userId));
+        }
+
+        Optional<Booking> optionalUpdatedBooking = bookingStorage.findById(bookingId);
+
+        if (optionalUpdatedBooking.isPresent()) {
+
+            Booking booking = optionalUpdatedBooking.get();
+
+            if (!(booking.getItem().getOwner().equals(user.get()))) {
+                throw new InternalServerException("Текущий пользователь не является владельцем вещи");
+            }
+
+            BookingMapper.updateBookingFields(booking, updateBookingRequest);
 
             booking = bookingStorage.save(booking);
 

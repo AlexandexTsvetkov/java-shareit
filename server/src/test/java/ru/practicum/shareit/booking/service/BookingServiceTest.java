@@ -7,10 +7,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.NewBookingRequest;
+import ru.practicum.shareit.booking.dto.UpdateBookingRequest;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.model.State;
 import ru.practicum.shareit.booking.storage.BookingRepository;
+import ru.practicum.shareit.exception.InternalServerException;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.ItemRepository;
 import ru.practicum.shareit.user.model.User;
@@ -23,6 +26,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -88,6 +92,48 @@ class BookingServiceTest {
     }
 
     @Test
+    public void updateTest() {
+
+        User user = new User();
+        user.setName("Test User");
+        user.setEmail("test@test.com");
+        user.setId(1L);
+
+        Item item = new Item();
+        item.setName("Test Item");
+        item.setId(1L);
+        item.setOwner(user);
+        item.setDescription("Some descrioption");
+        item.setName("Some name");
+        item.setAvailable(true);
+
+        UpdateBookingRequest updateBookingRequest = new UpdateBookingRequest();
+        updateBookingRequest.setId(1L);
+        updateBookingRequest.setStatus(BookingStatus.APPROVED);
+        updateBookingRequest.setStart(LocalDateTime.now().plusMinutes(1));
+        updateBookingRequest.setEnd(LocalDateTime.now().plusMinutes(2));
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+
+        Booking booking = new Booking();
+        booking.setId(1L);
+        booking.setItem(item);
+        booking.setBooker(user);
+        booking.setStart(Instant.now());
+        booking.setEnd(Instant.now());
+        booking.setStatus(BookingStatus.APPROVED);
+
+        when(bookingRepository.findById(1L)).thenReturn(Optional.of(booking));
+
+        when(bookingRepository.save(any(Booking.class))).thenReturn(booking);
+
+        BookingDto bookingDto = bookingService.update(1L, 1L, updateBookingRequest);
+        assertEquals(1L,  bookingDto.getId());
+
+        verify(bookingRepository).save(any(Booking.class));
+    }
+
+    @Test
     public void approveWhenApprovedTest() {
 
         User user = new User();
@@ -113,11 +159,14 @@ class BookingServiceTest {
         booking.setEnd(Instant.now());
         booking.setStatus(BookingStatus.APPROVED);
 
+        UpdateBookingRequest updateBookingRequest = new UpdateBookingRequest();
+        updateBookingRequest.setId(1L);
+
         when(bookingRepository.save(any(Booking.class))).thenReturn(booking);
         when(bookingRepository.findById(1L)).thenReturn(Optional.of(booking));
 
         BookingDto bookingDto = bookingService.approve(1L, 1L, true);
-        assertEquals(1L,  bookingDto.getId());
+        assertEquals(updateBookingRequest.getId(),  bookingDto.getId());
         assertEquals(BookingStatus.APPROVED,  bookingDto.getStatus());
 
         verify(bookingRepository).save(any(Booking.class));
@@ -561,5 +610,82 @@ class BookingServiceTest {
         assertEquals(1L,  dto.getId());
 
         verify(bookingRepository).findBookingByIdAndOwnerOrBookerId(any(Long.class), any(Long.class));
+    }
+
+    @Test
+    public void createShouldThrowNotFoundErrorWhenUserNotFound() {
+        NewBookingRequest newBookingRequest = new NewBookingRequest();
+        newBookingRequest.setItemId(1L);
+        newBookingRequest.setStart(LocalDateTime.now().plusMinutes(1));
+        newBookingRequest.setEnd(LocalDateTime.now().plusMinutes(2));
+
+        when(userRepository.findById(1L)).thenReturn(Optional.empty());
+
+        NotFoundException thrown = assertThrows(NotFoundException.class, () ->
+                bookingService.create(newBookingRequest, 1L)
+        );
+        assertEquals("Пользователь с id 1 не найден", thrown.getMessage());
+    }
+
+    @Test
+    public void createShouldThrowNotFoundErrorWhenItemNotFound() {
+        User user = new User();
+        user.setName("Test User");
+        user.setEmail("test@test.com");
+        user.setId(1L);
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(itemRepository.findById(1L)).thenReturn(Optional.empty());
+
+        NewBookingRequest newBookingRequest = new NewBookingRequest();
+        newBookingRequest.setItemId(1L);
+        newBookingRequest.setStart(LocalDateTime.now().plusMinutes(1));
+        newBookingRequest.setEnd(LocalDateTime.now().plusMinutes(2));
+
+        NotFoundException thrown = assertThrows(NotFoundException.class, () ->
+                bookingService.create(newBookingRequest, 1L)
+        );
+        assertEquals("Вещь с id 1 не найден", thrown.getMessage());
+    }
+
+
+
+    @Test
+    public void createShouldThrowInternalServerErrorWhenItemNotAvailable() {
+        User user = new User();
+        user.setName("Test User");
+        user.setEmail("test@test.com");
+        user.setId(1L);
+
+        Item item = new Item();
+        item.setName("Test Item");
+        item.setId(1L);
+        item.setOwner(user);
+        item.setDescription("Some description");
+        item.setAvailable(false); // Устанавливаем недоступным
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(itemRepository.findById(1L)).thenReturn(Optional.of(item));
+
+        NewBookingRequest newBookingRequest = new NewBookingRequest();
+        newBookingRequest.setItemId(1L);
+        newBookingRequest.setStart(LocalDateTime.now().plusMinutes(1));
+        newBookingRequest.setEnd(LocalDateTime.now().plusMinutes(2));
+
+        InternalServerException thrown = assertThrows(InternalServerException.class, () ->
+                bookingService.create(newBookingRequest, 1L)
+        );
+        assertEquals("Вещь с id 1 не доступна для бронирования", thrown.getMessage());
+    }
+
+    @Test
+    public void approveShouldThrowNotFoundWhenBookingNotFound() {
+        when(userRepository.findById(1L)).thenReturn(Optional.of(new User()));
+        when(bookingRepository.findById(1L)).thenReturn(Optional.empty());
+
+        NotFoundException thrown = assertThrows(NotFoundException.class, () ->
+                bookingService.approve(1L, 1L, true)
+        );
+        assertEquals("Бронирование с id 1 не найден", thrown.getMessage());
     }
 }
