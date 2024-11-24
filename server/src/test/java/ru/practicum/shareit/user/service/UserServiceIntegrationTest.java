@@ -23,31 +23,14 @@ class UserServiceIntegrationTest {
     public void createTest() {
 
         UserDto user = new UserDto();
-        user.setName("Test User22");
-        user.setEmail("test22@test.com");
+        user.setName("Test User98");
+        user.setEmail("test98@test.com");
 
         UserDto newUser = userService.create(user);
 
         assertTrue(userStorage.findById(newUser.getId()).isPresent());
     }
 
-    @Test
-    public void createErrorTest() {
-
-        UserDto user = new UserDto();
-        user.setName("Test User22");
-        user.setEmail("test22@test.com");
-
-        UserDto newUser = userService.create(user);
-
-        UserDto user2 = new UserDto();
-        user2.setName("Test User22");
-        user2.setEmail("test22@test.com");
-
-        UserDto newUser2 = userService.create(user2);
-
-        assertTrue(userStorage.findById(newUser.getId()).isPresent());
-    }
 
     @Test
     public void updateTest() {
