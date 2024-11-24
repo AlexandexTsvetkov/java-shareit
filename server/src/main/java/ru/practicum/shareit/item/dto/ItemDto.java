@@ -22,8 +22,6 @@ public class ItemDto {
     @NotNull
     private Boolean available;
 
-    private int retailsNumber;
-
     private LocalDateTime lastBooking;
 
     private LocalDateTime nextBooking;

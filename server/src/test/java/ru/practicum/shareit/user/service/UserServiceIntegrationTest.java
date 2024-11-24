@@ -3,12 +3,12 @@ package ru.practicum.shareit.user.service;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.dto.UpdateUserRequest;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.storage.UserRepository;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class UserServiceIntegrationTest {
@@ -78,6 +78,15 @@ class UserServiceIntegrationTest {
     }
 
     @Test
+    public void findByIdErrorTest() {
+
+        NotFoundException thrown = assertThrows(NotFoundException.class, () ->
+                userService.findById(100000L)
+        );
+
+    }
+
+    @Test
     public void findAllTest() {
 
         UserDto user = new UserDto();
@@ -87,5 +96,16 @@ class UserServiceIntegrationTest {
         UserDto newUser = userService.create(user);
 
         assertTrue(!userService.findAll().isEmpty());
+    }
+
+    @Test
+    public void updateErrorTest() {
+
+
+        UpdateUserRequest updateUserRequest = new UpdateUserRequest();
+        updateUserRequest.setName("Test User277");
+        NotFoundException thrown = assertThrows(NotFoundException.class, () -> userService.update(100000L, updateUserRequest)
+        );
+
     }
 }

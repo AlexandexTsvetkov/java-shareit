@@ -3,6 +3,7 @@ package ru.practicum.shareit.request.service;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.storage.ItemRepository;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.NewRequest;
@@ -10,8 +11,7 @@ import ru.practicum.shareit.request.storage.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserRepository;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class ItemRequestIntegrationTest {
@@ -77,8 +77,8 @@ class ItemRequestIntegrationTest {
     public void findByIdTest() {
 
         User user = new User();
-        user.setName("Test User20");
-        user.setEmail("test20@test.com");
+        user.setName("Test User2089");
+        user.setEmail("test20y678@test.com");
 
         User newUser = userStorage.save(user);
 
@@ -88,5 +88,14 @@ class ItemRequestIntegrationTest {
         ItemRequestDto itemRequestDto = itemRequestService.create(newRequest, newUser.getId());
 
         assertEquals(itemRequestService.findById(itemRequestDto.getId()).getId(), itemRequestDto.getId());
+    }
+
+    @Test
+    public void findByIdErrorTest() {
+
+        NotFoundException thrown = assertThrows(NotFoundException.class, () ->
+                itemRequestService.findById(100000L)
+        );
+
     }
 }

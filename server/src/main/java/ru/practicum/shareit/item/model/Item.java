@@ -13,7 +13,6 @@ import java.util.Objects;
 @Table(name = "item", schema = "public")
 @Getter
 @Setter
-@ToString
 public class Item {
 
     @Id
@@ -30,9 +29,6 @@ public class Item {
     private String description;
 
     private Boolean available;
-
-    @Transient
-    private int retailsNumber;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @ToString.Exclude

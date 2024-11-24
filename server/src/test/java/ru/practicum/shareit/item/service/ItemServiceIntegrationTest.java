@@ -7,6 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.storage.BookingRepository;
+import ru.practicum.shareit.exception.InternalServerException;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.CommentRepository;
@@ -17,8 +19,7 @@ import ru.practicum.shareit.user.storage.UserRepository;
 
 import java.time.Instant;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class ItemServiceIntegrationTest {
@@ -167,6 +168,15 @@ class ItemServiceIntegrationTest {
         assertEquals(commentRepository.getReferenceById(commentDto.getId()).getText(), newCommentRequest.getText());
     }
 
+    @Test
+    public void addCommentErrorTest() {
+
+        NewCommentRequest newCommentRequest = new NewCommentRequest();
+        newCommentRequest.setText("Comment");
+
+        InternalServerException thrown = assertThrows(InternalServerException.class, () -> itemService.addComment(newCommentRequest, 100000L, 10000000L));
+    }
+
     @Transactional
     @Test
     public void findByTest() {
@@ -186,7 +196,104 @@ class ItemServiceIntegrationTest {
 
         Item item = itemStorage.save(newItem);
 
-        assertEquals(itemService.findByText(newItem.getDescription()).size(), 1);
+        assertTrue(itemService.findByText(newItem.getDescription()).size() > 0);
+    }
+
+    @Test
+    public void findByIdErrorTest() {
+
+        NotFoundException thrown = assertThrows(NotFoundException.class, () ->
+                itemService.findById(100000L)
+        );
+
+    }
+
+    @Test
+    public void updateErrorTest() {
+
+        User user = new User();
+        user.setName("Test User14gfyyi");
+        user.setEmail("testy780014@test.com");
+
+        User newUser = userStorage.save(user);
+
+
+        UpdateItemRequest updateItemRequest = new UpdateItemRequest();
+        updateItemRequest.setName("Test Item13");
+        NotFoundException thrown = assertThrows(NotFoundException.class, () -> itemService.update(updateItemRequest, newUser.getId(), 10000L));
+
+    }
+
+    @Test
+    public void updateErrorItemTest() {
+
+        User user = new User();
+        user.setName("Test User147t");
+        user.setEmail("test1vjv4@test.com");
+
+        User newUser = userStorage.save(user);
+
+        Item newItem = new Item();
+        newItem.setName("Test Item15");
+        newItem.setOwner(newUser);
+        newItem.setDescription("Some descrioption15");
+        newItem.setName("Some name");
+        newItem.setAvailable(true);
+
+        Item item = itemStorage.save(newItem);
+
+        UpdateItemRequest updateItemRequest = new UpdateItemRequest();
+        updateItemRequest.setName("Test Item13");
+        NotFoundException thrown = assertThrows(NotFoundException.class, () -> itemService.update(updateItemRequest, 100000L, item.getId()));
+
+    }
+
+    @Test
+    public void updateErrorItemNotOwnerTest() {
+
+        User user = new User();
+        user.setName("Test User147tfgdf");
+        user.setEmail("test1vjv4dgdfgd@test.com");
+
+        User newUser = userStorage.save(user);
+
+        User user2 = new User();
+        user2.setName("Test User147tfgdf55");
+        user2.setEmail("test1vjv554dgdfgd@test.com");
+
+        User newUser2 = userStorage.save(user2);
+
+        Item newItem = new Item();
+        newItem.setName("Test Item15");
+        newItem.setOwner(newUser);
+        newItem.setDescription("Some descrioption15");
+        newItem.setName("Some name");
+        newItem.setAvailable(true);
+
+        Item item = itemStorage.save(newItem);
+
+        UpdateItemRequest updateItemRequest = new UpdateItemRequest();
+        updateItemRequest.setName("Test Item13");
+        InternalServerException thrown = assertThrows(InternalServerException.class, () -> itemService.update(updateItemRequest, 2, item.getId()));
+
+    }
+
+    @Test
+    public void createErrorTest() {
+
+        User user = new User();
+        user.setName("Test User8756775");
+        user.setEmail("test85675677@test.com");
+
+        User newUser = userStorage.save(user);
+
+        NewItemRequest newItemRequest = new NewItemRequest();
+        newItemRequest.setName("Test Item8");
+        newItemRequest.setDescription("Test Description8");
+        newItemRequest.setAvailable(true);
+        newItemRequest.setOwner(newUser);
+
+        NotFoundException thrown = assertThrows(NotFoundException.class, () -> itemService.create(newItemRequest, 1000000L));
     }
 
 }

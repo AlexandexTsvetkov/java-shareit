@@ -9,6 +9,7 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.model.State;
 import ru.practicum.shareit.booking.storage.BookingRepository;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.ItemRepository;
 import ru.practicum.shareit.user.model.User;
@@ -17,8 +18,7 @@ import ru.practicum.shareit.user.storage.UserRepository;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class BookingServiceIntegrationTest {
@@ -134,11 +134,40 @@ class BookingServiceIntegrationTest {
     }
 
     @Test
+    public void findByUserFutureTest() {
+
+        User user = new User();
+        user.setName("Test User4777");
+        user.setEmail("test4777@test.com");
+
+        User newUser = userRepository.save(user);
+
+        Item newItem = new Item();
+        newItem.setName("Test Item4");
+        newItem.setOwner(newUser);
+        newItem.setDescription("Some descrioption");
+        newItem.setName("Some name");
+        newItem.setAvailable(true);
+
+        Item item = itemStorage.save(newItem);
+
+        NewBookingRequest newBookingRequest = new NewBookingRequest();
+        newBookingRequest.setItemId(item.getId());
+        newBookingRequest.setBooker(newUser);
+        newBookingRequest.setStatus(BookingStatus.APPROVED);
+        newBookingRequest.setStart(LocalDateTime.now().plusMinutes(1));
+        newBookingRequest.setEnd(LocalDateTime.now().plusMinutes(2));
+
+        BookingDto bookingDto = bookingService.create(newBookingRequest, newUser.getId());
+        assertEquals(bookingService.findAllByUser(newUser.getId(), State.FUTURE).size(), 1);
+    }
+
+    @Test
     public void findByUserTest() {
 
         User user = new User();
-        user.setName("Test User4");
-        user.setEmail("test4@test.com");
+        user.setName("Test User47776661");
+        user.setEmail("test47776661@test.com");
 
         User newUser = userRepository.save(user);
 
@@ -163,11 +192,40 @@ class BookingServiceIntegrationTest {
     }
 
     @Test
+    public void findByUserPastTest() {
+
+        User user = new User();
+        user.setName("Test User4777666");
+        user.setEmail("test4777666@test.com");
+
+        User newUser = userRepository.save(user);
+
+        Item newItem = new Item();
+        newItem.setName("Test Item4");
+        newItem.setOwner(newUser);
+        newItem.setDescription("Some descrioption");
+        newItem.setName("Some name");
+        newItem.setAvailable(true);
+
+        Item item = itemStorage.save(newItem);
+
+        NewBookingRequest newBookingRequest = new NewBookingRequest();
+        newBookingRequest.setItemId(item.getId());
+        newBookingRequest.setBooker(newUser);
+        newBookingRequest.setStatus(BookingStatus.APPROVED);
+        newBookingRequest.setStart(LocalDateTime.now().plusMinutes(1));
+        newBookingRequest.setEnd(LocalDateTime.now().plusMinutes(2));
+
+        BookingDto bookingDto = bookingService.create(newBookingRequest, newUser.getId());
+        assertEquals(bookingService.findAllByUser(newUser.getId(), State.PAST).size(), 0);
+    }
+
+    @Test
     public void findByOwnerTest() {
 
         User user = new User();
-        user.setName("Test User5");
-        user.setEmail("test5@test.com");
+        user.setName("Test User57t7t7");
+        user.setEmail("testvgiygygugk5@test.com");
 
         User newUser = userRepository.save(user);
 
@@ -219,4 +277,74 @@ class BookingServiceIntegrationTest {
         BookingDto bookingDto = bookingService.create(newBookingRequest, newUser.getId());
         assertEquals(bookingService.getBooking(bookingDto.getId(), newUser.getId()).getId(), bookingDto.getId());
     }
+
+    @Test
+    public void findByIdErrorTest() {
+
+        NotFoundException thrown = assertThrows(NotFoundException.class, () ->
+                bookingService.findById(100000L)
+        );
+
+    }
+
+    @Test
+    public void createError() {
+
+        User user = new User();
+        user.setName("Test User5");
+        user.setEmail("test5@test.com");
+
+        User newUser = userRepository.save(user);
+
+        Item newItem = new Item();
+        newItem.setName("Test Item5");
+        newItem.setOwner(newUser);
+        newItem.setDescription("Some descrioption");
+        newItem.setName("Some name");
+        newItem.setAvailable(true);
+
+        Item item = itemStorage.save(newItem);
+
+        NewBookingRequest newBookingRequest = new NewBookingRequest();
+        newBookingRequest.setItemId(item.getId());
+        newBookingRequest.setBooker(newUser);
+        newBookingRequest.setStatus(BookingStatus.APPROVED);
+        newBookingRequest.setStart(LocalDateTime.now().plusMinutes(1));
+        newBookingRequest.setEnd(LocalDateTime.now().plusMinutes(2));
+
+        NotFoundException thrown = assertThrows(NotFoundException.class, () ->
+                bookingService.create(newBookingRequest, 100000L)
+        );
+    }
+
+    @Test
+    public void createErrorItem() {
+
+        User user = new User();
+        user.setName("Test User5435543564");
+        user.setEmail("test5465645645645@test.com");
+
+        User newUser = userRepository.save(user);
+
+        Item newItem = new Item();
+        newItem.setName("Test Item5");
+        newItem.setOwner(newUser);
+        newItem.setDescription("Some descrioption");
+        newItem.setName("Some name");
+        newItem.setAvailable(true);
+
+        Item item = itemStorage.save(newItem);
+
+        NewBookingRequest newBookingRequest = new NewBookingRequest();
+        newBookingRequest.setItemId(1000000L);
+        newBookingRequest.setBooker(newUser);
+        newBookingRequest.setStatus(BookingStatus.APPROVED);
+        newBookingRequest.setStart(LocalDateTime.now().plusMinutes(1));
+        newBookingRequest.setEnd(LocalDateTime.now().plusMinutes(2));
+
+        NotFoundException thrown = assertThrows(NotFoundException.class, () ->
+                bookingService.create(newBookingRequest, newUser.getId())
+        );
+    }
+
 }

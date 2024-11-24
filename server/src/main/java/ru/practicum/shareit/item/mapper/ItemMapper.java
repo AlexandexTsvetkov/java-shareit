@@ -35,7 +35,6 @@ public class ItemMapper {
         dto.setDescription(item.getDescription());
         dto.setName(item.getName());
         dto.setAvailable(item.getAvailable());
-        dto.setRetailsNumber(item.getRetailsNumber());
         dto.setComments(comments);
 
         return dto;
@@ -48,7 +47,6 @@ public class ItemMapper {
         dto.setDescription(item.getDescription());
         dto.setName(item.getName());
         dto.setAvailable(item.getAvailable());
-        dto.setRetailsNumber(item.getRetailsNumber());
         dto.setComments(comments);
         dto.setLastBooking((lastBooking == null) ? null : LocalDateTime.ofInstant(lastBooking, ZoneId.systemDefault()));
         dto.setNextBooking((nextBooking == null) ? null : LocalDateTime.ofInstant(nextBooking, ZoneId.systemDefault()));
@@ -63,7 +61,6 @@ public class ItemMapper {
         dto.setDescription(item.getDescription());
         dto.setName(item.getName());
         dto.setAvailable(item.getAvailable());
-        dto.setRetailsNumber(item.getRetailsNumber());
 
         return dto;
     }
