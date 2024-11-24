@@ -57,9 +57,11 @@ public class ItemRepositoryTest {
 
         Item itemFound = foundItem.get();
 
-        assertEquals(itemFound.getOwner(), newUser);
+        assertTrue(itemFound.equals(newItem));
         assertEquals(itemFound, newItem);
-
+        assertEquals(itemFound.hashCode(), newItem.hashCode());
+        assertEquals(itemFound.getAvailable(), newItem.getAvailable());
+        assertEquals(itemFound.getName(), newItem.getName());
     }
 
     @Test
